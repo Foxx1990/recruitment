@@ -1,0 +1,120 @@
+openapi: "3.0.2"
+info:
+  title: API docs for recruitment task
+  version: "1.0"
+servers:
+  - url: https://localhost
+paths:
+  /path_to_get_order_details:
+    get:
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        404:
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        422:
+          description: Validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        itemsTotal:
+          type: integer
+          description: Sum of all items values (including items discounts)
+        adjustmentsTotal:
+          type: integer
+          description: Sum of all additional fees or discounts (discounts are represented as negative value)
+        taxTotal:
+          type: integer
+          nullable: true
+          description: Sum of items tax values (if all items are tax-free the value should be null)
+        total:
+          type: integer
+          description: Final price to pay (sum of "itemsTotal" and "adjustmentsTotal")
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        product:
+          $ref: '#/components/schemas/Product'
+        unitPrice:
+          type: integer
+          description: Price of a single item
+        discount:
+          type: integer
+          nullable: true
+          description: Percentage value of assigned discount to this item (null if there is no discount)
+        discountValue:
+          type: integer
+          description: Discounted amount assigned to the single item
+        distributedOrderDiscountValue:
+          type: integer
+          description: Discount amount for the entire order divided into one item
+        discountedUnitPrice:
+          type: integer
+          description: Price for a single item with all discounts applied
+        quantity:
+          type: integer
+          description: Number of product's items
+        total:
+          type: integer
+          description: Discounted unit price multiplied by the number of items
+        taxValue:
+          type: integer
+          nullable: true
+          description: Amount of tax calculated from "total" and product's tax rate (null if tax-free)
+
+    Product:
+      type: object
+      description: Details of the product assigned to the item
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    ValidationResponse:
+      type: object
+      properties:
+        violations:
+          type: array
+          items:
+            type: string
+      required:
+        - violations

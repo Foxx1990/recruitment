@@ -10,6 +10,7 @@
 
         <field name="name" type="string" nullable="false"/>
         <field name="code" type="string" nullable="false"/>
+        <field name="type" type="string" nullable="false" length="10"/>
         <field name="price" type="integer" nullable="false"/>
         <field name="taxRate" type="integer" nullable="true"/>
 

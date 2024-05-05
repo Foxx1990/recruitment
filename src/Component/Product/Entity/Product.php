@@ -6,9 +6,14 @@ namespace App\Component\Product\Entity;
 
 class Product
 {
+    public const TYPE_BOOK = 'book';
+    public const TYPE_AUDIO = 'audio';
+    public const TYPE_COURSE = 'course';
+
     protected int $id;
     protected string $code;
     protected string $name;
+    protected string $type;
     protected int $price;
     /** null means that product is tax-free  */
     protected ?int $taxRate;
@@ -36,6 +41,16 @@ class Product
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
     }
 
     public function getPrice(): int
