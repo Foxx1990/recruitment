@@ -9,6 +9,10 @@
         </id>
         <field name="quantity" type="integer"/>
         <field name="unitPrice" type="integer"/>
+        <field name="discount" type="integer" nullable="true"/>
+        <field name="discountValue" type="integer"/>
+        <field name="distributedOrderDiscountValue" type="integer"/>
+        <field name="discountedUnitPrice" type="integer"/>
         <field name="total" type="integer"/>
         <field name="taxValue" type="integer" nullable="true"/>
 

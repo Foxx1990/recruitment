@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\PhpUnit\App\Cart\Service;
 
 use App\Component\Cart\Service\CartService;
+use App\Component\Cart\Service\CartValidator;
 use App\Component\Order\Entity\Order;
 use App\Component\Product\Entity\Product;
 use DomainException;
@@ -16,7 +17,7 @@ class CartServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cartService = new CartService();
+        $this->cartService = new CartService(new CartValidator());
     }
 
     public function testAddProductIncreasesQuantityOfExistingItem(): void
@@ -47,23 +48,26 @@ class CartServiceTest extends TestCase
     public function testAddProductThrowsExceptionWhenMaxTotalQuantityExceeded(): void
     {
         $cart = new Order();
-        $product = $this->createProduct('P1', 100);
+        $this->cartService->addProduct($cart, $this->createProduct('P1', 100), 20);
+        $this->cartService->addProduct($cart, $this->createProduct('P2', 100), 20);
 
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Total quantity in cart cannot exceed 50.');
 
-        $this->cartService->addProduct($cart, $product, 51);
+        $this->cartService->addProduct($cart, $this->createProduct('P3', 100), 11);
     }
 
     public function testAddProductThrowsExceptionWhenAddingSmallQuantityExceedsMaxTotal(): void
     {
         $cart = new Order();
-        $this->cartService->addProduct($cart, $this->createProduct('P1', 100), 45);
+        $this->cartService->addProduct($cart, $this->createProduct('P1', 100), 20);
+        $this->cartService->addProduct($cart, $this->createProduct('P2', 100), 20);
+        $this->cartService->addProduct($cart, $this->createProduct('P3', 100), 10);
 
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Total quantity in cart cannot exceed 50.');
 
-        $this->cartService->addProduct($cart, $this->createProduct('P2', 100), 6);
+        $this->cartService->addProduct($cart, $this->createProduct('P4', 100), 1);
     }
 
     public function testAddProductThrowsExceptionWhenMaxItemQuantityExceeded(): void

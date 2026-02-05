@@ -52,6 +52,7 @@ final class CartContext implements Context
     public function theCartResponseShouldContainMessage(string $message): void
     {
         $content = json_decode($this->response->getContent() ?: '', true, 512, JSON_THROW_ON_ERROR);
-        Assert::same($content['message'] ?? $content['error'] ?? '', $message);
+        $actual = is_array($content) ? ($content['message'] ?? $content['error'] ?? '') : '';
+        Assert::same($actual, $message);
     }
 }

@@ -64,6 +64,7 @@ test-behat: up ## Run behat on fresh container
 		bin/console about; \
 		bin/console do:da:dr --force; \
 		bin/console do:da:cr --if-not-exists && bin/console do:sch:upd --force; \
+		bin/console do:fix:lo --no-interaction; \
 		bin/console do:sch:val; \
 		vendor/bin/behat; \
 	"
@@ -74,6 +75,7 @@ test: up ## Run all tests on fresh container
 		bin/console about; \
 		bin/console do:da:dr --force; \
 		bin/console do:da:cr --if-not-exists && bin/console do:sch:upd --force; \
+		bin/console do:fix:lo --no-interaction; \
 		bin/console do:sch:val; \
 		vendor/bin/behat; \
 		bin/phpunit; \
