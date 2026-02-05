@@ -16,7 +16,7 @@ class OrderTest extends TestCase
         $orderItem = new OrderItem();
         $orderItem->setQuantity(2);
         $orderItem->setUnitPrice(99);
-        $orderItem->recalculateTotal();
+        $orderItem->setTotal($orderItem->getSubtotal());
 
         $order = new Order();
         $order->addItem($orderItem);

@@ -43,18 +43,21 @@ class AppFixtures extends Fixture
         $orderPromotion = new Promotion();
         $orderPromotion->setType(Promotion::TYPE_ORDER);
         $orderPromotion->setPercentageDiscount(13);
+        $orderPromotion->setCode('order_promotion');
         $manager->persist($orderPromotion);
 
         $firstItemPromotion = new Promotion();
         $firstItemPromotion->setType(Promotion::TYPE_ITEM);
         $firstItemPromotion->setPercentageDiscount(15);
         $firstItemPromotion->setProductTypesFilter([Product::TYPE_BOOK, Product::TYPE_AUDIO]);
+        $firstItemPromotion->setCode('first_item_promotion');
         $manager->persist($firstItemPromotion);
 
         $secondItemPromotion = new Promotion();
         $secondItemPromotion->setType(Promotion::TYPE_ITEM);
         $secondItemPromotion->setPercentageDiscount(24);
         $secondItemPromotion->setProductTypesFilter([Product::TYPE_AUDIO]);
+        $secondItemPromotion->setCode('second_item_promotion');
         $manager->persist($secondItemPromotion);
 
         $manager->flush();

@@ -10,6 +10,7 @@
 
         <field name="type" type="smallint" nullable="false"/>
         <field name="percentageDiscount" type="integer" nullable="false"/>
+        <field name="code" type="string" nullable="true"/>
         <field name="productTypesFilter" type="json" nullable="true"/>
     </entity>
 </doctrine-mapping>

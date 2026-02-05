@@ -14,6 +14,10 @@ class OrderItem
     protected ?Product $product;
     protected int $quantity;
     protected int $unitPrice;
+    protected ?int $discount = null;
+    protected int $discountValue = 0;
+    protected int $distributedOrderDiscountValue = 0;
+    protected int $discountedUnitPrice = 0;
     protected ?int $taxValue;
     protected int $total = 0;
 
@@ -62,6 +66,46 @@ class OrderItem
         $this->unitPrice = $unitPrice;
     }
 
+    public function getDiscount(): ?int
+    {
+        return $this->discount;
+    }
+
+    public function setDiscount(?int $discount): void
+    {
+        $this->discount = $discount;
+    }
+
+    public function getDiscountValue(): int
+    {
+        return $this->discountValue;
+    }
+
+    public function setDiscountValue(int $discountValue): void
+    {
+        $this->discountValue = $discountValue;
+    }
+
+    public function getDistributedOrderDiscountValue(): int
+    {
+        return $this->distributedOrderDiscountValue;
+    }
+
+    public function setDistributedOrderDiscountValue(int $distributedOrderDiscountValue): void
+    {
+        $this->distributedOrderDiscountValue = $distributedOrderDiscountValue;
+    }
+
+    public function getDiscountedUnitPrice(): int
+    {
+        return $this->discountedUnitPrice;
+    }
+
+    public function setDiscountedUnitPrice(int $discountedUnitPrice): void
+    {
+        $this->discountedUnitPrice = $discountedUnitPrice;
+    }
+
     public function getTotal(): int
     {
         return $this->total;
@@ -85,10 +129,5 @@ class OrderItem
     public function setTaxValue(?int $taxValue): void
     {
         $this->taxValue = $taxValue;
-    }
-
-    public function recalculateTotal(): void
-    {
-        $this->total = $this->getSubtotal();
     }
 }

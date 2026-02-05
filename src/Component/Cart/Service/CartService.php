@@ -7,7 +7,6 @@ namespace App\Component\Cart\Service;
 use App\Component\Order\Entity\Order;
 use App\Component\OrderItem\Entity\OrderItem;
 use App\Component\Product\Entity\Product;
-use DomainException;
 
 class CartService
 {
@@ -17,52 +16,55 @@ class CartService
     public const MIN_ITEM_QUANTITY = 1;
     public const MAX_ITEM_QUANTITY = 20;
 
+    public function __construct(
+        private readonly CartValidator $validator,
+    ) {
+    }
+
     public function addProduct(Order $cart, Product $product, int $quantity): void
     {
-        if ($quantity < self::MIN_ITEM_QUANTITY) {
-            throw new DomainException('Quantity must be at least 1.');
-        }
+        $this->validator->assertMinQuantity($quantity, self::MIN_ITEM_QUANTITY);
 
-        $existingItem = null;
+        $existingItem = $this->findExistingItem($cart, $product);
+        $this->validator->assertDifferentProductsLimit($cart, $existingItem, self::MAX_DIFFERENT_PRODUCTS);
+
+        $newItemQuantity = $this->calculateNewItemQuantity($existingItem, $quantity);
+        $this->validator->assertMaxItemQuantity($newItemQuantity, self::MAX_ITEM_QUANTITY);
+        $this->validator->assertMaxTotalQuantity($cart, $quantity, self::MAX_TOTAL_QUANTITY);
+
+        $this->applyItemQuantity($cart, $product, $existingItem, $newItemQuantity);
+    }
+
+    private function findExistingItem(Order $cart, Product $product): ?OrderItem
+    {
         foreach ($cart->getItems() as $item) {
             if ($item->getProduct() === $product) {
-                $existingItem = $item;
-                break;
+                return $item;
             }
         }
 
-        if ($existingItem === null && $cart->getItems()->count() >= self::MAX_DIFFERENT_PRODUCTS) {
-            throw new DomainException(sprintf('Cart cannot contain more than %d different products.', self::MAX_DIFFERENT_PRODUCTS));
-        }
+        return null;
+    }
 
-        $newItemQuantity = $quantity;
-        if ($existingItem !== null) {
-            $newItemQuantity = $existingItem->getQuantity() + $quantity;
-        }
 
-        if ($newItemQuantity > self::MAX_ITEM_QUANTITY) {
-            throw new DomainException(sprintf('Quantity of a single product in cart cannot exceed %d.', self::MAX_ITEM_QUANTITY));
-        }
+    private function calculateNewItemQuantity(?OrderItem $existingItem, int $quantity): int
+    {
+        return $existingItem !== null ? $existingItem->getQuantity() + $quantity : $quantity;
+    }
 
-        $currentTotalQuantity = 0;
-        foreach ($cart->getItems() as $item) {
-            $currentTotalQuantity += $item->getQuantity();
-        }
-
-        if ($currentTotalQuantity + $quantity > self::MAX_TOTAL_QUANTITY) {
-            throw new DomainException(sprintf('Total quantity in cart cannot exceed %d.', self::MAX_TOTAL_QUANTITY));
-        }
-
+    private function applyItemQuantity(Order $cart, Product $product, ?OrderItem $existingItem, int $newItemQuantity): void
+    {
         if ($existingItem !== null) {
             $existingItem->setQuantity($newItemQuantity);
-            $existingItem->recalculateTotal();
-        } else {
-            $orderItem = new OrderItem();
-            $orderItem->setProduct($product);
-            $orderItem->setQuantity($newItemQuantity);
-            $orderItem->setUnitPrice($product->getPrice());
-            $orderItem->recalculateTotal();
-            $cart->addItem($orderItem);
+            $existingItem->setTotal($existingItem->getSubtotal());
+            return;
         }
+
+        $orderItem = new OrderItem();
+        $orderItem->setProduct($product);
+        $orderItem->setQuantity($newItemQuantity);
+        $orderItem->setUnitPrice($product->getPrice());
+        $orderItem->setTotal($orderItem->getSubtotal());
+        $cart->addItem($orderItem);
     }
 }

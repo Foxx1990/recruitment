@@ -10,9 +10,21 @@
 
         <field name="itemsTotal" type="integer"/>
         <field name="adjustmentsTotal" type="integer"/>
+        <field name="taxTotal" type="integer" nullable="true"/>
         <field name="total" type="integer"/>
 
+        <many-to-one field="orderPromotion" target-entity="App\Component\Promotion\Entity\Promotion">
+            <join-column name="order_promotion_id" referenced-column-name="id" nullable="true"/>
+        </many-to-one>
+
         <one-to-many field="items" target-entity="App\Component\OrderItem\Entity\OrderItem" mapped-by="order"
+                     orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </one-to-many>
+
+        <one-to-many field="itemPromotions" target-entity="App\Component\OrderPromotion\Entity\OrderPromotion" mapped-by="order"
                      orphan-removal="true">
             <cascade>
                 <cascade-all/>

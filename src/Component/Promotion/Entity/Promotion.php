@@ -12,6 +12,7 @@ class Promotion
     protected int $id;
     protected int $type;
     protected int $percentageDiscount;
+    protected ?string $code = null;
     /** @var string[]|null */
     protected ?array $productTypesFilter;
 
@@ -38,6 +39,16 @@ class Promotion
     public function setPercentageDiscount(int $percentageDiscount): void
     {
         $this->percentageDiscount = $percentageDiscount;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): void
+    {
+        $this->code = $code;
     }
 
     /**
